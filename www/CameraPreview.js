@@ -1,3 +1,4 @@
+cordova.define("cordova-plugin-camera-preview.CameraPreview", function(require, exports, module) {
 var argscheck = require('cordova/argscheck'),
     utils = require('cordova/utils'),
     exec = require('cordova/exec');
@@ -16,6 +17,14 @@ CameraPreview.setFlashMode = function(flashMode, onSuccess, onError) {
 
 CameraPreview.setOnLogHandler = function(onSuccess, onError) {
   exec(onSuccess, onError, PLUGIN_NAME, "wLog", []);
+};
+
+CameraPreview.setFocusMode = function(focusMode, onSuccess, onError) {
+  exec(onSuccess, onError, PLUGIN_NAME, "setFocusMode", [focusMode]);
+};
+
+CameraPreview.getFocusMode = function(onSuccess, onError) {
+  exec(onSuccess, onError, PLUGIN_NAME, "getFocusMode", []);
 };
 
 CameraPreview.startCamera = function(options,onSuccess, onError){
@@ -83,3 +92,5 @@ CameraPreview.disable = function(disable, onSuccess, onError){
 CameraPreview.FlashMode = {OFF: 0, ON: 1, AUTO: 2};
 
 module.exports = CameraPreview;
+
+});
