@@ -56,8 +56,9 @@ public class CameraActivity extends Fragment {
 
   private static final int FOCUS_AUTO = 0;
   private static final int FOCUS_CONTINUOUS = 1;
+  private static final int FOCUS_MACRO = 2;
 
-  public int currentFocusMode = 0;
+  public int currentFocusMode = 1;
 
   private CameraPreviewListener eventListener;
   private static final String TAG = "CameraActivity";
@@ -233,7 +234,7 @@ public class CameraActivity extends Fragment {
 
     // set continuous autofocus
     setFocusMode(FOCUS_CONTINUOUS);
-    
+
     cameraCurrentlyLocked = defaultCameraId;
 
     if(mPreview.mPreviewSize == null){
@@ -345,6 +346,8 @@ public class CameraActivity extends Fragment {
         parameters.setFocusMode(Parameters.FOCUS_MODE_AUTO);
       } else if(focusMode == FOCUS_CONTINUOUS && supportedFocusModes.contains(Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)) {
         parameters.setFocusMode(Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+      } else if(focusMode == FOCUS_MACRO && supportedFocusModes.contains(Parameters.FOCUS_MODE_MACRO)) {
+        parameters.setFocusMode(Parameters.FOCUS_MODE_MACRO);
       }
       mCamera.setParameters(parameters);
     }
@@ -354,6 +357,12 @@ public class CameraActivity extends Fragment {
     currentFocusMode = focusMode;
   }
 
+  public String getFocusMode() {
+    Camera.Parameters parameters = mCamera.getParameters();
+    String focusMode = parameters.getFocusMode();
+
+    return focusMode;
+  }
 
   public void setCameraParameters(Camera.Parameters params) {
     cameraParameters = params;

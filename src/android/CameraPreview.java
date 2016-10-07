@@ -30,6 +30,8 @@ public class CameraPreview extends CordovaPlugin implements CameraActivity.Camer
   private final String takePictureAction = "takePicture";
   private final String showCameraAction = "showCamera";
   private final String hideCameraAction = "hideCamera";
+  private final String setFocusModeAction = "setFocusMode";
+  private final String getFocusModeAction = "getFocusMode";
 
   private final String permission = Manifest.permission.CAMERA;
 
@@ -75,6 +77,12 @@ public class CameraPreview extends CordovaPlugin implements CameraActivity.Camer
     }
     else if (showCameraAction.equals(action)){
       return showCamera(args, callbackContext);
+    }
+    else if (setFocusModeAction.equals(action)) {
+      return setFocusMode(args, callbackContext);
+    }
+    else if (getFocusModeAction.equals(action)) {
+      return getFocusMode(args, callbackContext);
     }
     else if (switchCameraAction.equals(action)){
       return switchCamera(args, callbackContext);
@@ -138,14 +146,22 @@ public class CameraPreview extends CordovaPlugin implements CameraActivity.Camer
             containerView.bringToFront();
           }
 
+          //callbackContext.success("good");
+
           //add the fragment to the container
           FragmentManager fragmentManager = cordova.getActivity().getFragmentManager();
           FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
           fragmentTransaction.add(containerView.getId(), fragment);
           fragmentTransaction.commit();
+
+
         }
         catch(Exception e){
+          //callbackContext.error(e.toString());
+
           e.printStackTrace();
+
+
         }
       }
     });
@@ -217,6 +233,41 @@ public class CameraPreview extends CordovaPlugin implements CameraActivity.Camer
       e.printStackTrace();
       return false;
     }
+  }
+
+  /*
+  private static final int FOCUS_AUTO = 0;
+  private static final int FOCUS_CONTINUOUS = 1;
+  private static final int FOCUS_MACRO = 2;
+  */
+
+    private boolean setFocusMode(final JSONArray args, CallbackContext callbackContext) {
+      if (fragment == null) {
+        // fragment == camera handler
+        return false;
+      }
+
+      try {
+        fragment.setFocusMode(args.getInt(0));
+      } catch (Exception e) {
+        e.printStackTrace();
+        return false;
+      }
+
+      return true;
+    }
+
+  private boolean getFocusMode(final JSONArray args, CallbackContext callbackContext) {
+    if (fragment == null) {
+      // fragment == camera handler
+      return false;
+    }
+
+    //String focusMode = fragment.getFocusMode();
+
+    callbackContext.success(fragment.getFocusMode());
+
+    return true;
   }
 
   private boolean stopCamera(final JSONArray args, CallbackContext callbackContext) {
