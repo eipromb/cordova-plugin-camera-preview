@@ -11,6 +11,10 @@ CameraPreview.setOnPictureTakenHandler = function(onSuccess, onError) {
   exec(onSuccess, onError, PLUGIN_NAME, "setOnPictureTakenHandler", []);
 };
 
+CameraPreview.setOnCameraReadyHandler = function(onSuccess, onError) {
+  exec(onSuccess, onError, PLUGIN_NAME, "setOnCameraReadyHandler", []);
+};
+
 CameraPreview.setFlashMode = function(flashMode, onSuccess, onError) {
   exec(onSuccess, onError, PLUGIN_NAME, "setFlashMode", [flashMode]);
 };
@@ -26,6 +30,11 @@ CameraPreview.setFocusMode = function(focusMode, onSuccess, onError) {
 CameraPreview.getFocusMode = function(onSuccess, onError) {
   exec(onSuccess, onError, PLUGIN_NAME, "getFocusMode", []);
 };
+
+CameraPreview.getSupportedFocusModes = function(onSuccess, onError) {
+  exec(onSuccess, onError, PLUGIN_NAME, "getSupportedFocusModes", []);
+};
+
 
 CameraPreview.startCamera = function(options,onSuccess, onError){
   options = options || {};
