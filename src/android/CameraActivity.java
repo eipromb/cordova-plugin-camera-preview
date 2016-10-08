@@ -46,6 +46,7 @@ public class CameraActivity extends Fragment {
 
   public interface CameraPreviewListener {
     public void onPictureTaken(String originalPicturePath);
+    public void onCameraReady(int cameraFacing);
   }
 
   private static final int FLASH_OFF = 0;
@@ -129,6 +130,7 @@ public class CameraActivity extends Fragment {
       mainLayout.addView(mPreview);
       mainLayout.setEnabled(false);
 
+/*
       final GestureDetector gestureDetector = new GestureDetector(getActivity().getApplicationContext(), new TapGestureDetector());
 
       getActivity().runOnUiThread(new Runnable() {
@@ -141,6 +143,7 @@ public class CameraActivity extends Fragment {
             private int mLastTouchY;
             private int mPosX = 0;
             private int mPosY = 0;
+
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -198,9 +201,11 @@ public class CameraActivity extends Fragment {
               }
               return true;
             }
+
           });
         }
       });
+*/
     }
   }
 
@@ -227,6 +232,8 @@ public class CameraActivity extends Fragment {
     super.onResume();
 
     mCamera = Camera.open(defaultCameraId);
+
+    eventListener.onCameraReady(1);
 
     if (cameraParameters != null) {
       mCamera.setParameters(cameraParameters);
@@ -359,9 +366,26 @@ public class CameraActivity extends Fragment {
 
   public String getFocusMode() {
     Camera.Parameters parameters = mCamera.getParameters();
-    String focusMode = parameters.getFocusMode();
+    return parameters.getFocusMode();
+  }
 
-    return focusMode;
+  public List<String> getSupportedFocusModes() {
+    Camera.Parameters parameters = mCamera.getParameters();
+    return parameters.getSupportedFocusModes();
+  }
+
+  public String getFlashMode() {
+    Camera.Parameters parameters = mCamera.getParameters();
+    String flashMode = parameters.getFlashMode();
+
+    return flashMode;
+  }
+
+  public String getSceneMode() {
+    Camera.Parameters parameters = mCamera.getParameters();
+    String sceneMode = parameters.getSceneMode();
+
+    return sceneMode;
   }
 
   public void setCameraParameters(Camera.Parameters params) {

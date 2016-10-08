@@ -22,6 +22,7 @@ public class CameraPreview extends CordovaPlugin implements CameraActivity.Camer
 
   private final String TAG = "CameraPreview";
   private final String setOnPictureTakenHandlerAction = "setOnPictureTakenHandler";
+  private final String setOnCameraReadyHandlerAction = "setOnCameraReadyHandler";
   private final String setColorEffectAction = "setColorEffect";
   private final String startCameraAction = "startCamera";
   private final String stopCameraAction = "stopCamera";
@@ -32,6 +33,7 @@ public class CameraPreview extends CordovaPlugin implements CameraActivity.Camer
   private final String hideCameraAction = "hideCamera";
   private final String setFocusModeAction = "setFocusMode";
   private final String getFocusModeAction = "getFocusMode";
+  private final String getSupportedFocusModesAction = "getSupportedFocusModes";
 
   private final String permission = Manifest.permission.CAMERA;
 
@@ -41,7 +43,9 @@ public class CameraPreview extends CordovaPlugin implements CameraActivity.Camer
 
   private CameraActivity fragment;
   private CallbackContext takePictureCallbackContext;
+  private CallbackContext cameraReadyCallbackContext;
   private FrameLayout containerView;
+
   public CameraPreview(){
     super();
     Log.d(TAG, "Constructing");
@@ -52,6 +56,9 @@ public class CameraPreview extends CordovaPlugin implements CameraActivity.Camer
 
     if (setOnPictureTakenHandlerAction.equals(action)){
       return setOnPictureTakenHandler(args, callbackContext);
+    }
+    else if (setOnCameraReadyHandlerAction.equals(action)){
+      return setOnCameraReadyHandler(args, callbackContext);
     }
     else if (startCameraAction.equals(action)){
       if (cordova.hasPermission(permission)) {
@@ -84,6 +91,9 @@ public class CameraPreview extends CordovaPlugin implements CameraActivity.Camer
     else if (getFocusModeAction.equals(action)) {
       return getFocusMode(args, callbackContext);
     }
+    else if (getSupportedFocusModesAction.equals(action)) {
+      return getSupportedFocusModes(args, callbackContext);
+    }
     else if (switchCameraAction.equals(action)){
       return switchCamera(args, callbackContext);
     } else if (setFlashModeAction.equals(action)){
@@ -93,7 +103,7 @@ public class CameraPreview extends CordovaPlugin implements CameraActivity.Camer
     return false;
   }
 
-  private boolean startCamera(final JSONArray args, CallbackContext callbackContext) {
+  private boolean startCamera(final JSONArray args, final CallbackContext callbackContext) {
     if(fragment != null){
       return false;
     }
@@ -146,7 +156,7 @@ public class CameraPreview extends CordovaPlugin implements CameraActivity.Camer
             containerView.bringToFront();
           }
 
-          //callbackContext.success("good");
+
 
           //add the fragment to the container
           FragmentManager fragmentManager = cordova.getActivity().getFragmentManager();
@@ -154,10 +164,10 @@ public class CameraPreview extends CordovaPlugin implements CameraActivity.Camer
           fragmentTransaction.add(containerView.getId(), fragment);
           fragmentTransaction.commit();
 
-
+          callbackContext.success("good");
         }
         catch(Exception e){
-          //callbackContext.error(e.toString());
+          callbackContext.error(e.toString());
 
           e.printStackTrace();
 
@@ -190,6 +200,12 @@ public class CameraPreview extends CordovaPlugin implements CameraActivity.Camer
     PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, originalPicturePath);
     pluginResult.setKeepCallback(true);
     takePictureCallbackContext.sendPluginResult(pluginResult);
+  }
+
+  public void onCameraReady(int cameraFacing) {
+    PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, cameraFacing);
+    pluginResult.setKeepCallback(true);
+    cameraReadyCallbackContext.sendPluginResult(pluginResult);
   }
 
   private boolean setColorEffect(final JSONArray args, CallbackContext callbackContext) {
@@ -270,6 +286,23 @@ public class CameraPreview extends CordovaPlugin implements CameraActivity.Camer
     return true;
   }
 
+  private boolean getSupportedFocusModes(final JSONArray args, CallbackContext callbackContext) {
+    if (fragment == null) {
+      // fragment == camera handler
+      callbackContext.error("fragment is null");
+      return false;
+    }
+
+    try {
+      callbackContext.success((new JSONArray(fragment.getSupportedFocusModes())).toString());
+    } catch (Exception e) {
+      callbackContext.error(e.toString());
+      return false;
+    }
+
+    return true;
+  }
+
   private boolean stopCamera(final JSONArray args, CallbackContext callbackContext) {
     if(fragment == null){
       return false;
@@ -335,6 +368,12 @@ public class CameraPreview extends CordovaPlugin implements CameraActivity.Camer
     takePictureCallbackContext = callbackContext;
     return true;
   }
+
+  private boolean setOnCameraReadyHandler(JSONArray args, CallbackContext callbackContext) {
+    cameraReadyCallbackContext = callbackContext;
+    return true;
+  }
+
   @Override
   public void onRequestPermissionResult(int requestCode, String[] permissions, int[] grantResults) throws JSONException {
     for(int r:grantResults)
